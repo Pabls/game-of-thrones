@@ -7,6 +7,9 @@
     <color name="color_gray">#8D8C8C</color>
     <color name="color_gray_light">#dedede</color>
 
+    <color name="blue">#2a62d7</color>
+    <color name="red">#e33f3f</color>
+    <color name="green">#18845d</color>
 
     <color name="stark_primary">#414141</color>
     <color name="stark_accent">#C3C3C1</color>

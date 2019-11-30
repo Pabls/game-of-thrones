@@ -1,27 +1,21 @@
 package ru.skillbranch.gameofthrones.presentation.base
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import ru.skillbranch.gameofthrones.app.App
 import ru.skillbranch.gameofthrones.app.di.components.IApplicationComponent
 
-abstract class BaseFragment : Fragment(), IBaseView {
+abstract class BaseActivity : AppCompatActivity(), IBaseView {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(getLayoutId(), container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         inject()
+        setContentView(getLayoutId())
         getPresenter()?.attachView(this)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         getPresenter()?.detachView()
     }
 
@@ -48,7 +42,7 @@ abstract class BaseFragment : Fragment(), IBaseView {
     protected fun getComponent(): IApplicationComponent = App.applicationComponent
 
     protected abstract fun inject()
-    abstract fun setPresenter(presenter: IPresenter<IBaseView>)
-    abstract fun getLayoutId(): Int
+    abstract fun setPresenter(presenter: BasePresenter<IBaseView>)
+    protected abstract fun getLayoutId(): Int
     protected abstract fun getPresenter(): IPresenter<IBaseView>?
 }
