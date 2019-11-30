@@ -10,6 +10,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.app.App
 import ru.skillbranch.gameofthrones.app.di.components.IApplicationComponent
+import ru.skillbranch.gameofthrones.presentation.main.IRouter
 
 abstract class BaseFragment : Fragment(), IBaseView {
 
@@ -59,6 +60,14 @@ abstract class BaseFragment : Fragment(), IBaseView {
     abstract fun setPresenter(presenter: IPresenter<IBaseView>)
     abstract fun getLayoutId(): Int
     protected abstract fun getPresenter(): IPresenter<IBaseView>?
+
+    protected fun getRouter(): IRouter? {
+        return if (activity != null && activity is IRouter) {
+            activity as IRouter
+        } else {
+            null
+        }
+    }
 
     private fun createAndShowSnackbar(
         message: String,

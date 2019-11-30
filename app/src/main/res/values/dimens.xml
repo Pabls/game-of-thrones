@@ -9,6 +9,7 @@
     <dimen name="margin_24">24dp</dimen>
     <dimen name="margin_32">32dp</dimen>
     <dimen name="margin_48">48dp</dimen>
+    <dimen name="margin_64">64dp</dimen>
     <dimen name="margin_88">88dp</dimen>
 
     <dimen name="padding_0">0dp</dimen>
@@ -18,6 +19,7 @@
     <dimen name="padding_32">32dp</dimen>
 
     <dimen name="text_size_12">12sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
     <dimen name="text_size_18">18sp</dimen>
     <dimen name="text_size_24">24sp</dimen>
     <dimen name="text_size_32">32sp</dimen>

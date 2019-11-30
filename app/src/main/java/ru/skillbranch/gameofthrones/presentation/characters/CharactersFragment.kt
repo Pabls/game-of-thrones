@@ -13,6 +13,7 @@ import ru.skillbranch.gameofthrones.presentation.base.IBaseView
 import ru.skillbranch.gameofthrones.presentation.base.IPresenter
 import ru.skillbranch.gameofthrones.presentation.characters.adapter.CharactersAdapter
 import ru.skillbranch.gameofthrones.presentation.characters.adapter.ItemClickListener
+import ru.skillbranch.gameofthrones.presentation.main.IRouter
 
 
 class CharactersFragment : BaseFragment(), ICharactersView {
@@ -78,11 +79,16 @@ class CharactersFragment : BaseFragment(), ICharactersView {
         adapter?.setData(characters)
     }
 
+    override fun navigateToCharacterFragment(id: String) {
+        getRouter()?.navigateToCharacterFragment(id)
+    }
 
     private fun initView(view: View) {
         rvCharacters = view.findViewById(R.id.rv_characters)
         adapter = CharactersAdapter(object : ItemClickListener {
-            override fun onClick(id: String) { presenter?.onItemClick(id) }
+            override fun onClick(id: String) {
+                presenter?.onItemClick(id)
+            }
         })
         rvCharacters?.adapter = adapter
     }

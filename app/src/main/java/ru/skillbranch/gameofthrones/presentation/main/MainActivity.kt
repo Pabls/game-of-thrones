@@ -10,9 +10,11 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager.widget.ViewPager
+import ru.skillbranch.gameofthrones.R
+import ru.skillbranch.gameofthrones.presentation.character.CharacterFragment
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), IRouter {
 
     companion object {
         @JvmStatic
@@ -58,5 +60,12 @@ class MainActivity : AppCompatActivity() {
 //        })
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun navigateToCharacterFragment(id: String) {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.cl_container, CharacterFragment.newInstance(id), id)
+            .addToBackStack(id)
+            .commit()
     }
 }

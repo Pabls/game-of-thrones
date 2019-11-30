@@ -10,4 +10,11 @@
     <string name="error.check_network">Интернет недоступен - приложение не может быть запущенно.
         Подключитесь к интернету и перезапустите приложение</string>
 
+    <string name="character_fragment.text.words">Words:</string>
+    <string name="character_fragment.text.born">Born:</string>
+    <string name="character_fragment.text.titles">Titles:</string>
+    <string name="character_fragment.text.aliases">Aliases:</string>
+    <string name="character_fragment.text.father">Father:</string>
+    <string name="character_fragment.text.mother">Mother:</string>
+
 </resources>

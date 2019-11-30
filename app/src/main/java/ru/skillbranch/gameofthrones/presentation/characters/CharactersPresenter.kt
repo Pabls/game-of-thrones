@@ -29,6 +29,6 @@ class CharactersPresenter : BasePresenter<ICharactersView>() {
     }
 
     fun onItemClick(id: String) {
-        getView()?.showMessage(id)
+        getView()?.navigateToCharacterFragment(id)
     }
 }
