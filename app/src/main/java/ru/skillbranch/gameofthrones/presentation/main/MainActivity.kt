@@ -1,7 +1,8 @@
-package ru.skillbranch.gameofthrones
+package ru.skillbranch.gameofthrones.presentation.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ru.skillbranch.gameofthrones.R
 
 class MainActivity : AppCompatActivity() {
 
