@@ -1,4 +1,6 @@
 package ru.skillbranch.gameofthrones.presentation.characters
 
-class CharactersPresenter {
+import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
+
+class CharactersPresenter : BasePresenter<ICharactersView>() {
 }

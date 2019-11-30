@@ -1,4 +1,6 @@
 package ru.skillbranch.gameofthrones.presentation.character
 
-interface ICharacterView {
+import ru.skillbranch.gameofthrones.presentation.base.IBaseView
+
+interface ICharacterView: IBaseView {
 }

@@ -1,15 +1,18 @@
 package ru.skillbranch.gameofthrones.presentation.characters
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.skillbranch.gameofthrones.R
+import ru.skillbranch.gameofthrones.presentation.base.BaseFragment
+import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
+import ru.skillbranch.gameofthrones.presentation.base.IBaseView
+import ru.skillbranch.gameofthrones.presentation.base.IPresenter
 
 
-class CharactersFragment : Fragment() {
+class CharactersFragment : BaseFragment(), IBaseView {
 
     companion object {
 
@@ -25,6 +28,7 @@ class CharactersFragment : Fragment() {
     }
 
     private var param1: String? = null
+    private var presenter: CharactersPresenter? = null
     private var rvCharacters: RecyclerView? = null
 
 
@@ -45,6 +49,26 @@ class CharactersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView(view)
+    }
+
+    override fun inject() {
+        getComponent().inject(this)
+    }
+
+    override fun setPresenter(presenter: IPresenter<IBaseView>) {
+        this.presenter = presenter as CharactersPresenter
+    }
+
+    override fun getLayoutId(): Int = R.layout.fragment_characters
+
+    override fun getPresenter(): IPresenter<IBaseView>? {
+        return try {
+            return if (presenter is BasePresenter<*>)
+                presenter as BasePresenter<IBaseView>
+            else null
+        } catch (ex: Exception) {
+            null
+        }
     }
 
     private fun initView(view: View) {
