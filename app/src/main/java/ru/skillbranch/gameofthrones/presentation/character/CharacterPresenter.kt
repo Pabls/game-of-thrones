@@ -4,8 +4,14 @@ import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterFull
 import ru.skillbranch.gameofthrones.data.local.entities.RelativeCharacter
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
+import ru.skillbranch.gameofthrones.repositories.IResourcesRepository
+import ru.skillbranch.gameofthrones.repositories.IRootRepository
 
-class CharacterPresenter : BasePresenter<ICharacterView>() {
+class CharacterPresenter(
+    val rootRepository: IRootRepository,
+    val resourcesRepository: IResourcesRepository
+)
+    : BasePresenter<ICharacterView>() {
 
     lateinit var char: CharacterFull
 

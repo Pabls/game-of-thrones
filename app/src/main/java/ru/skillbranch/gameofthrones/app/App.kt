@@ -6,6 +6,11 @@ import ru.skillbranch.gameofthrones.app.di.components.IApplicationComponent
 
 class App : Application() {
     companion object {
-        val applicationComponent: IApplicationComponent = ApplicationComponent()
+        lateinit var applicationComponent: IApplicationComponent
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        applicationComponent = ApplicationComponent(this)
     }
 }

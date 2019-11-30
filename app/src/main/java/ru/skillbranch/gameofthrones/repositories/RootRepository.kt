@@ -6,15 +6,14 @@ import ru.skillbranch.gameofthrones.data.local.entities.CharacterItem
 import ru.skillbranch.gameofthrones.data.remote.res.CharacterRes
 import ru.skillbranch.gameofthrones.data.remote.res.HouseRes
 
-object RootRepository {
+object RootRepository : IRootRepository {
 
     /**
      * Получение данных о всех домах
      * @param result - колбек содержащий в себе список данных о домах
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getAllHouses(result : (houses : List<HouseRes>) -> Unit) {
-        //TODO implement me
+    override fun getAllHouses(result: (houses: List<HouseRes>) -> Unit) {
     }
 
     /**
@@ -23,7 +22,7 @@ object RootRepository {
      * @param result - колбек содержащий в себе список данных о домах
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getNeedHouses(vararg houseNames: String, result : (houses : List<HouseRes>) -> Unit) {
+    override fun getNeedHouses(vararg houseNames: String, result: (houses: List<HouseRes>) -> Unit) {
         //TODO implement me
     }
 
@@ -33,7 +32,10 @@ object RootRepository {
      * @param result - колбек содержащий в себе список данных о доме и персонажей в нем (Дом - Список Персонажей в нем)
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getNeedHouseWithCharacters(vararg houseNames: String, result : (houses : List<Pair<HouseRes, List<CharacterRes>>>) -> Unit) {
+    override fun getNeedHouseWithCharacters(
+        vararg houseNames: String,
+        result: (houses: List<Pair<HouseRes, List<CharacterRes>>>) -> Unit
+    ) {
         //TODO implement me
     }
 
@@ -44,7 +46,7 @@ object RootRepository {
      * @param complete - колбек о завершении вставки записей db
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun insertHouses(houses : List<HouseRes>, complete: () -> Unit) {
+    override fun insertHouses(houses: List<HouseRes>, complete: () -> Unit) {
         //TODO implement me
     }
 
@@ -55,7 +57,7 @@ object RootRepository {
      * @param complete - колбек о завершении вставки записей db
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun insertCharacters(Characters : List<CharacterRes>, complete: () -> Unit) {
+    override fun insertCharacters(Characters: List<CharacterRes>, complete: () -> Unit) {
         //TODO implement me
     }
 
@@ -64,7 +66,7 @@ object RootRepository {
      * @param complete - колбек о завершении очистки db
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun dropDb(complete: () -> Unit) {
+    override fun dropDb(complete: () -> Unit) {
         //TODO implement me
     }
 
@@ -75,7 +77,7 @@ object RootRepository {
      * @param result - колбек содержащий в себе список краткой информации о персонажах дома
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun findCharactersByHouseName(name : String, result: (Characters : List<CharacterItem>) -> Unit) {
+    override fun findCharactersByHouseName(name: String, result: (Characters: List<CharacterItem>) -> Unit) {
         //TODO implement me
     }
 
@@ -86,7 +88,7 @@ object RootRepository {
      * @param result - колбек содержащий в себе полную информацию о персонаже
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun findCharacterFullById(id : String, result: (Character : CharacterFull) -> Unit) {
+    override fun findCharacterFullById(id: String, result: (Character: CharacterFull) -> Unit) {
         //TODO implement me
     }
 
@@ -94,7 +96,7 @@ object RootRepository {
      * Метод возвращет true если в базе нет ни одной записи, иначе false
      * @param result - колбек о завершении очистки db
      */
-    fun isNeedUpdate(result: (isNeed : Boolean) -> Unit){
+    override fun isNeedUpdate(result: (isNeed: Boolean) -> Unit) {
         //TODO implement me
     }
 

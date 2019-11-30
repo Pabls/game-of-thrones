@@ -1,13 +1,16 @@
 package ru.skillbranch.gameofthrones.app.di.components
 
+import android.content.Context
 import ru.skillbranch.gameofthrones.app.di.modules.PresentersModule
+import ru.skillbranch.gameofthrones.app.di.modules.RepositoriesModule
 import ru.skillbranch.gameofthrones.presentation.character.CharacterFragment
 import ru.skillbranch.gameofthrones.presentation.characters.CharactersFragment
 import ru.skillbranch.gameofthrones.presentation.splash.SplashActivity
 
-class ApplicationComponent : IApplicationComponent {
+class ApplicationComponent(private val context: Context) : IApplicationComponent {
 
-    val presentersModule = PresentersModule()
+    val repositoriesModule = RepositoriesModule(context)
+    val presentersModule = PresentersModule(repositoriesModule)
 
     override fun inject(characterFragment: CharacterFragment) {
         characterFragment.setPresenter(presentersModule.getCharacterPresenter())

@@ -2,8 +2,13 @@ package ru.skillbranch.gameofthrones.presentation.characters
 
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterItem
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
+import ru.skillbranch.gameofthrones.repositories.IResourcesRepository
+import ru.skillbranch.gameofthrones.repositories.IRootRepository
 
-class CharactersPresenter : BasePresenter<ICharactersView>() {
+class CharactersPresenter(
+    val rootRepository: IRootRepository,
+    val resourcesRepository: IResourcesRepository
+) : BasePresenter<ICharactersView>() {
 
     override fun attachView(view: ICharactersView?) {
         super.attachView(view)
