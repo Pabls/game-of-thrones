@@ -13,25 +13,24 @@ import ru.skillbranch.gameofthrones.presentation.base.IBaseView
 import ru.skillbranch.gameofthrones.presentation.base.IPresenter
 import ru.skillbranch.gameofthrones.presentation.characters.adapter.CharactersAdapter
 import ru.skillbranch.gameofthrones.presentation.characters.adapter.ItemClickListener
-import ru.skillbranch.gameofthrones.presentation.main.IRouter
 
 
 class CharactersFragment : BaseFragment(), ICharactersView {
 
     companion object {
 
-        private const val ARG_PARAM1 = "param1"
+        private const val ARG_HOUSE = "ARG_HOUSE"
 
         @JvmStatic
-        fun newInstance(param1: String) =
+        fun newInstance(house: String) =
             CharactersFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
+                    putString(ARG_HOUSE, house)
                 }
             }
     }
 
-    private var param1: String? = null
+    var house: String? = null
     private var presenter: CharactersPresenter? = null
     private var rvCharacters: RecyclerView? = null
     private var adapter: CharactersAdapter? = null
@@ -39,7 +38,7 @@ class CharactersFragment : BaseFragment(), ICharactersView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
+            house = it.getString(ARG_HOUSE)
         }
     }
 
@@ -81,6 +80,10 @@ class CharactersFragment : BaseFragment(), ICharactersView {
 
     override fun navigateToCharacterFragment(id: String) {
         getRouter()?.navigateToCharacterFragment(id)
+    }
+
+    fun setSearchQuery(query: String?) {
+        val i = 0
     }
 
     private fun initView(view: View) {

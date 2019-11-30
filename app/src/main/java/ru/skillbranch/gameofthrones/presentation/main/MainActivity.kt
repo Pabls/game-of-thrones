@@ -12,6 +12,8 @@ import com.google.android.material.tabs.TabLayout
 import androidx.viewpager.widget.ViewPager
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.presentation.character.CharacterFragment
+import ru.skillbranch.gameofthrones.presentation.characters.CharactersFragment
+import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity(), IRouter {
@@ -23,6 +25,8 @@ class MainActivity : AppCompatActivity(), IRouter {
 
     private var toolbar: Toolbar? = null
     private var searchView: SearchView? = null
+    private var viewPager: ViewPager? = null
+    private var tabLayout: TabLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +35,10 @@ class MainActivity : AppCompatActivity(), IRouter {
         toolbar?.title = getString(ru.skillbranch.gameofthrones.R.string.app_name)
         setSupportActionBar(toolbar)
 
-        val viewPager = findViewById<ViewPager>(R.id.viewpager)
-        viewPager.adapter = PagerAdapter(supportFragmentManager, this@MainActivity)
-        val tabLayout = findViewById<TabLayout>(R.id.sliding_tabs)
-        tabLayout.setupWithViewPager(viewPager)
+        viewPager = findViewById<ViewPager>(R.id.viewpager)
+        viewPager?.adapter = PagerAdapter(supportFragmentManager, this@MainActivity)
+        tabLayout = findViewById<TabLayout>(R.id.sliding_tabs)
+        tabLayout?.setupWithViewPager(viewPager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -45,19 +49,17 @@ class MainActivity : AppCompatActivity(), IRouter {
         searchView?.inputType = InputType.TYPE_TEXT_VARIATION_URI
         searchView?.queryHint = getString(ru.skillbranch.gameofthrones.R.string.menu_search_hint)
 
-//        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                if (query != null && !query.isEmpty()) {
-//                    loadUrl(getString(ru.skillbranch.gameofthrones.R.string.shema) + query)
-//                    clearSearchView()
-//                }
-//                return false
-//            }
-//
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                return false
-//            }
-//        })
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                setSearchQuery(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                setSearchQuery(newText)
+                return true
+            }
+        })
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -67,5 +69,20 @@ class MainActivity : AppCompatActivity(), IRouter {
             .add(R.id.cl_container, CharacterFragment.newInstance(id), id)
             .addToBackStack(id)
             .commit()
+    }
+
+    private fun setSearchQuery(query: String?) {
+        try {
+            val tab = tabLayout?.getTabAt(tabLayout!!.selectedTabPosition)
+            val house = tab?.text
+            val fragment = supportFragmentManager.fragments.find {
+                it is CharactersFragment && it.house == house
+            }
+            if (fragment != null && fragment is CharactersFragment) {
+                fragment.setSearchQuery(query)
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
     }
 }

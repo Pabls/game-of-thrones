@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Game Of Thrones</string>
 
+    <string name="common.empty"></string>
+
     <string name="menu_search">Search</string>
     <string name="menu_search_hint">Search</string>
 
