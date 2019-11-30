@@ -10,5 +10,7 @@ object AppConfig {
         "House Baratheon of Dragonstone",
         "House Nymeros Martell of Sunspear"
     )
+
+    val HOUSES_NAMES = arrayOf("Stark", "Lannister", "Targaryen", "Baratheon", "Greyjoy", "Martel", "Tyrell")
     const val BASE_URL = "https://www.anapioficeandfire.com/api/"
 }

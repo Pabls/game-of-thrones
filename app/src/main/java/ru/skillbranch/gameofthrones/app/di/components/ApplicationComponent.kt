@@ -5,16 +5,16 @@ import ru.skillbranch.gameofthrones.presentation.character.CharacterFragment
 import ru.skillbranch.gameofthrones.presentation.characters.CharactersFragment
 import ru.skillbranch.gameofthrones.presentation.splash.SplashActivity
 
-class ApplicationComponent: IApplicationComponent {
+class ApplicationComponent : IApplicationComponent {
 
     val presentersModule = PresentersModule()
 
     override fun inject(characterFragment: CharacterFragment) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        characterFragment.setPresenter(presentersModule.getCharacterPresenter())
     }
 
     override fun inject(charactersFragment: CharactersFragment) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        charactersFragment.setPresenter(presentersModule.getCharactersPresenter())
     }
 
     override fun inject(splashActivity: SplashActivity) {

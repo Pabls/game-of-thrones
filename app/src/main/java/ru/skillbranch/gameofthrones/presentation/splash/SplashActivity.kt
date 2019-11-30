@@ -1,11 +1,13 @@
 package ru.skillbranch.gameofthrones.presentation.splash
 
+import android.content.Intent
 import android.os.Bundle
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.presentation.base.BaseActivity
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
 import ru.skillbranch.gameofthrones.presentation.base.IBaseView
 import ru.skillbranch.gameofthrones.presentation.base.IPresenter
+import ru.skillbranch.gameofthrones.presentation.main.MainActivity
 
 
 class SplashActivity : BaseActivity() {
@@ -35,5 +37,20 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Thread(Runnable {
+            Thread.sleep(1000)
+            this.runOnUiThread {
+                startMainActivity()
+            }
+        }).start()
+    }
+
+    private fun startMainActivity() {
+        val intent = Intent(MainActivity.getStartIntent(this))
+        startActivity(intent)
     }
 }

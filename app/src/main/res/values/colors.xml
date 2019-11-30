@@ -10,6 +10,7 @@
     <color name="blue">#2a62d7</color>
     <color name="red">#e33f3f</color>
     <color name="green">#18845d</color>
+    <color name="transparent_black">#90FFFFFF</color>
 
     <color name="stark_primary">#414141</color>
     <color name="stark_accent">#C3C3C1</color>

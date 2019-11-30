@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Game Of Thrones</string>
+
+    <string name="menu_search">Search</string>
+    <string name="menu_search_hint">Search</string>
+
+    <string name="item_character.text.unknown">"Information is unknown"</string>
+    <string name="item_character.text.separator">\u0020•\u0020</string>
+
+    <string name="error.check_network">Интернет недоступен - приложение не может быть запущенно.
+        Подключитесь к интернету и перезапустите приложение</string>
+
 </resources>

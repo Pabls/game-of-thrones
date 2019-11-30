@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.skillbranch.gameofthrones.R
+import ru.skillbranch.gameofthrones.data.local.entities.CharacterItem
 import ru.skillbranch.gameofthrones.presentation.base.BaseFragment
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
 import ru.skillbranch.gameofthrones.presentation.base.IBaseView
 import ru.skillbranch.gameofthrones.presentation.base.IPresenter
+import ru.skillbranch.gameofthrones.presentation.characters.adapter.CharactersAdapter
+import ru.skillbranch.gameofthrones.presentation.characters.adapter.ItemClickListener
 
 
-class CharactersFragment : BaseFragment(), IBaseView {
+class CharactersFragment : BaseFragment(), ICharactersView {
 
     companion object {
 
@@ -30,7 +33,7 @@ class CharactersFragment : BaseFragment(), IBaseView {
     private var param1: String? = null
     private var presenter: CharactersPresenter? = null
     private var rvCharacters: RecyclerView? = null
-
+    private var adapter: CharactersAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +50,8 @@ class CharactersFragment : BaseFragment(), IBaseView {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         initView(view)
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun inject() {
@@ -71,7 +74,16 @@ class CharactersFragment : BaseFragment(), IBaseView {
         }
     }
 
+    override fun setData(characters: List<CharacterItem>) {
+        adapter?.setData(characters)
+    }
+
+
     private fun initView(view: View) {
         rvCharacters = view.findViewById(R.id.rv_characters)
+        adapter = CharactersAdapter(object : ItemClickListener {
+            override fun onClick(id: String) { presenter?.onItemClick(id) }
+        })
+        rvCharacters?.adapter = adapter
     }
 }

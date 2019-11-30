@@ -7,7 +7,7 @@ import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
 import ru.skillbranch.gameofthrones.presentation.base.IBaseView
 import ru.skillbranch.gameofthrones.presentation.base.IPresenter
 
-class CharacterFragment : BaseFragment(), IBaseView {
+class CharacterFragment : BaseFragment(), ICharacterView {
 
     companion object {
 
