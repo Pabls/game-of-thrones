@@ -5,5 +5,5 @@ interface IBaseView {
     fun hideLoading()
     fun showMessage(message: String, indefinite: Boolean = false)
     fun showError(message: String, indefinite: Boolean = false)
-    fun showMessageWithAction(message: String, actionTitle: String, action: () -> Unit)
+    fun showMessageWithAction(message: String, actionTitle: String, indefinite: Boolean = false, action: () -> Unit)
 }

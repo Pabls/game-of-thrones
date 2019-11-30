@@ -7,10 +7,12 @@ import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
 
 class CharacterPresenter : BasePresenter<ICharacterView>() {
 
+    lateinit var char: CharacterFull
+
     override fun attachView(view: ICharacterView?) {
         super.attachView(view)
 
-        val char = CharacterFull(
+        char = CharacterFull(
             "1",
             "Jim Carry",
             "AAA its my time",
@@ -23,7 +25,19 @@ class CharacterPresenter : BasePresenter<ICharacterView>() {
             mother = RelativeCharacter("33", "Jane Arturus King", "Winterfall")
         )
 
-        getView()?.setColor(R.color.stark_primary, R.color.stark_accent)
+        setCharacterData()
+    }
+
+    fun onFatherBtnClick() {
+        getView()?.showNextCharacterScreen(char.father!!.id)
+    }
+
+    fun onMotherBtnClick() {
+        getView()?.showNextCharacterScreen(char.mother!!.id)
+    }
+
+    private fun setCharacterData() {
+        getView()?.setColor(R.color.baratheon_primary, R.color.baratheon_accent)
 
         getView()?.setAliases(char.aliases.joinToString(separator = "\t"))
         getView()?.setTitles(char.titles.joinToString(separator = "\t"))
@@ -31,10 +45,10 @@ class CharacterPresenter : BasePresenter<ICharacterView>() {
         getView()?.setWords(char.words)
 
         if (char.father != null)
-            getView()?.showFatherButton(char.father.name)
+            getView()?.showFatherButton(char.father!!.name)
 
         if (char.mother != null)
-            getView()?.showMotherButton(char.mother.name)
+            getView()?.showMotherButton(char.mother!!.name)
 
         if (!char.died.isNullOrEmpty())
             getView()?.showDiedMessage(char.died)

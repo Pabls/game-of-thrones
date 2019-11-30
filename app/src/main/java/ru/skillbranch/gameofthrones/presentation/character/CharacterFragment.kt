@@ -95,8 +95,8 @@ class CharacterFragment : BaseFragment(), ICharacterView {
         ivTitlesDecor = view.findViewById(R.id.iv_titles_decor)
         ivAliasesDecor = view.findViewById(R.id.iv_aliases_decor)
 
-        btnFather?.setOnClickListener { _ -> activity?.onBackPressed() }
-        btnMother?.setOnClickListener { _ -> activity?.onBackPressed() }
+        btnFather?.setOnClickListener { _ -> presenter?.onFatherBtnClick() }
+        btnMother?.setOnClickListener { _ -> presenter?.onMotherBtnClick() }
         ivBack?.setOnClickListener { _ -> activity?.onBackPressed() }
     }
 
@@ -144,5 +144,9 @@ class CharacterFragment : BaseFragment(), ICharacterView {
 
     override fun showDiedMessage(date: String) {
         showMessage(message = date, indefinite = true)
+    }
+
+    override fun showNextCharacterScreen(id: String) {
+        getRouter()?.navigateToCharacterFragment(id)
     }
 }

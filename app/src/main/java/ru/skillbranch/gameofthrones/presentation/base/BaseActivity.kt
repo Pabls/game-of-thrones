@@ -42,7 +42,7 @@ abstract class BaseActivity : AppCompatActivity(), IBaseView {
         createAndShowSnackbar(message = message, bgColor = ru.skillbranch.gameofthrones.R.color.color_accent, indefinite = indefinite)
     }
 
-    override fun showMessageWithAction(message: String, actionTitle: String, action: () -> Unit) {
+    override fun showMessageWithAction(message: String, actionTitle: String, indefinite : Boolean, action: () -> Unit) {
         createAndShowSnackbar(message = message, actionTitle = actionTitle, action = action, indefinite = true)
     }
 

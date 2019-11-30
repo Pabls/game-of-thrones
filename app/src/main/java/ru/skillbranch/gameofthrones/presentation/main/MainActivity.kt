@@ -26,21 +26,21 @@ class MainActivity : AppCompatActivity(), IRouter {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(ru.skillbranch.gameofthrones.R.layout.activity_main)
-        toolbar = findViewById(ru.skillbranch.gameofthrones.R.id.toolbar)
+        setContentView(R.layout.activity_main)
+        toolbar = findViewById(R.id.toolbar)
         toolbar?.title = getString(ru.skillbranch.gameofthrones.R.string.app_name)
         setSupportActionBar(toolbar)
 
-        val viewPager = findViewById<ViewPager>(ru.skillbranch.gameofthrones.R.id.viewpager)
+        val viewPager = findViewById<ViewPager>(R.id.viewpager)
         viewPager.adapter = PagerAdapter(supportFragmentManager, this@MainActivity)
-        val tabLayout = findViewById<TabLayout>(ru.skillbranch.gameofthrones.R.id.sliding_tabs)
+        val tabLayout = findViewById<TabLayout>(R.id.sliding_tabs)
         tabLayout.setupWithViewPager(viewPager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
-        inflater.inflate(ru.skillbranch.gameofthrones.R.menu.search_menu, menu)
-        val actionSearch = menu.findItem(ru.skillbranch.gameofthrones.R.id.menu_search)
+        inflater.inflate(R.menu.search_menu, menu)
+        val actionSearch = menu.findItem(R.id.menu_search)
         searchView = actionSearch.actionView as SearchView
         searchView?.inputType = InputType.TYPE_TEXT_VARIATION_URI
         searchView?.queryHint = getString(ru.skillbranch.gameofthrones.R.string.menu_search_hint)

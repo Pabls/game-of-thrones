@@ -43,15 +43,15 @@ abstract class BaseFragment : Fragment(), IBaseView {
     }
 
     override fun showMessage(message: String, indefinite: Boolean) {
-        createAndShowSnackbar(message = message, bgColor = R.color.color_primary_dark)
+        createAndShowSnackbar(message = message, bgColor = R.color.color_primary_dark, indefinite = indefinite)
     }
 
     override fun showError(message: String, indefinite: Boolean) {
-        createAndShowSnackbar(message = message, bgColor = R.color.color_accent)
+        createAndShowSnackbar(message = message, bgColor = R.color.color_accent, indefinite = indefinite)
     }
 
-    override fun showMessageWithAction(message: String, actionTitle: String, action: () -> Unit) {
-        createAndShowSnackbar(message = message, actionTitle = actionTitle, action = action)
+    override fun showMessageWithAction(message: String, actionTitle: String, indefinite: Boolean, action: () -> Unit) {
+        createAndShowSnackbar(message = message, actionTitle = actionTitle, indefinite = indefinite, action = action)
     }
 
     protected fun getComponent(): IApplicationComponent = App.applicationComponent
@@ -73,10 +73,13 @@ abstract class BaseFragment : Fragment(), IBaseView {
         message: String,
         bgColor: Int? = null,
         actionTitle: String? = null,
+        indefinite: Boolean,
         action: (() -> Unit)? = null
     ) {
         if (rootLayout != null) {
-            val snackbar = getSnackbar(message)
+            val snackbar = if (indefinite)
+                getSnackbar(message, Snackbar.LENGTH_INDEFINITE)
+            else getSnackbar(message, Snackbar.LENGTH_LONG)
 
             if (bgColor != null) {
                 snackbar.view.setBackgroundColor(ContextCompat.getColor(rootLayout!!.context, bgColor))
@@ -91,6 +94,6 @@ abstract class BaseFragment : Fragment(), IBaseView {
         }
     }
 
-    private fun getSnackbar(message: String): Snackbar =
-        Snackbar.make(rootLayout!!, message, Snackbar.LENGTH_LONG)
+    private fun getSnackbar(message: String, length: Int): Snackbar =
+        Snackbar.make(rootLayout!!, message, length)
 }
