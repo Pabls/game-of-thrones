@@ -1,8 +1,5 @@
 package ru.skillbranch.gameofthrones.data.local.entities
 
-import androidx.room.Dao
-import androidx.room.PrimaryKey
-
 data class Character(
     val id: String,
     val name: String,

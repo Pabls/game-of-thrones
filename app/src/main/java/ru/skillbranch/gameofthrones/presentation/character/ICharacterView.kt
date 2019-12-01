@@ -12,4 +12,7 @@ interface ICharacterView : IBaseView {
     fun showMotherButton(mother: String)
     fun showDiedMessage(date: String)
     fun showNextCharacterScreen(id: String)
+    fun setName(name: String)
+    fun setImage(id: Int)
+    fun getCharacterId(): String?
 }

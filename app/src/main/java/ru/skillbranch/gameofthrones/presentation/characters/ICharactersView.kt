@@ -6,4 +6,5 @@ import ru.skillbranch.gameofthrones.presentation.base.IBaseView
 interface ICharactersView : IBaseView {
     fun setData(characters: List<CharacterItem>)
     fun navigateToCharacterFragment(id: String)
+    fun getHouse(): String?
 }

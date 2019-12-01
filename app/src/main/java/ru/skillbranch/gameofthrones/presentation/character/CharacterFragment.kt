@@ -41,6 +41,7 @@ class CharacterFragment : BaseFragment(), ICharacterView {
     private var tvMotherTitle: TextView? = null
     private var ivBack: ImageView? = null
     private var collapsingToolbar: CollapsingToolbarLayout? = null
+    private var ivLogo : ImageView? = null
 
     private var ivWordsDecor: ImageView? = null
     private var ivBornDecor: ImageView? = null
@@ -94,6 +95,7 @@ class CharacterFragment : BaseFragment(), ICharacterView {
         ivBornDecor = view.findViewById(R.id.iv_born_decor)
         ivTitlesDecor = view.findViewById(R.id.iv_titles_decor)
         ivAliasesDecor = view.findViewById(R.id.iv_aliases_decor)
+        ivLogo = view.findViewById(R.id.iv_logo)
 
         btnFather?.setOnClickListener { _ -> presenter?.onFatherBtnClick() }
         btnMother?.setOnClickListener { _ -> presenter?.onMotherBtnClick() }
@@ -148,5 +150,15 @@ class CharacterFragment : BaseFragment(), ICharacterView {
 
     override fun showNextCharacterScreen(id: String) {
         getRouter()?.navigateToCharacterFragment(id)
+    }
+
+    override fun getCharacterId(): String? = characterId
+
+    override fun setName(name: String) {
+        collapsingToolbar?.title = name
+    }
+
+    override fun setImage(id: Int) {
+        ivLogo?.setImageResource(id)
     }
 }

@@ -16,5 +16,6 @@ data class HouseRes(
     val diedOut: String,
     val ancestralWeapons: List<String> = listOf(),
     val cadetBranches: List<String> = listOf(),
-    val swornMembers: List<String> = listOf()
+    val swornMembers: List<String> = listOf(),
+    var shortName: String = ""
 )

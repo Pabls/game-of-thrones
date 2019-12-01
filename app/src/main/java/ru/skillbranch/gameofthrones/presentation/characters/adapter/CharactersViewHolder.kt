@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import ru.skillbranch.gameofthrones.AppConfig
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterItem
 
@@ -27,10 +28,10 @@ class CharactersViewHolder(view: View, private val listener: ItemClickListener) 
     }
 
     fun bind(characterItem: CharacterItem) {
+        ivLogo.setImageResource(AppConfig.getIconIdByHome(characterItem.house))
         tvName.text = if (characterItem.name.isNullOrEmpty()) unknown else characterItem.name
         tvTitles.text =
             if (characterItem.titles.isNullOrEmpty()) unknown else characterItem.titles.joinToString(separator = separator)
-        ivLogo.setImageResource(R.drawable.stark_icon)
         clContainer.setOnClickListener { listener.onClick(characterItem.id) }
     }
 }

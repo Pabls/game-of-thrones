@@ -1,5 +1,6 @@
 package ru.skillbranch.gameofthrones.presentation.character
 
+import ru.skillbranch.gameofthrones.AppConfig
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterFull
 import ru.skillbranch.gameofthrones.data.local.entities.RelativeCharacter
@@ -16,21 +17,11 @@ class CharacterPresenter(
 
     override fun attachView(view: ICharacterView?) {
         super.attachView(view)
-
-        char = CharacterFull(
-            "1",
-            "Jim Carry",
-            "AAA its my time",
-            "12.09.1987",
-            "13.09.1999",
-            titles = listOf("lord of the ring", "billy bons"),
-            aliases = listOf("don of winter", "jimmy"),
-            house = "Winterfall",
-            father = RelativeCharacter("32", "Jonson Artur King", "Winterfall"),
-            mother = RelativeCharacter("33", "Jane Arturus King", "Winterfall")
-        )
-
-        setCharacterData()
+        getView()?.showLoading()
+        rootRepository.findCharacterFullById(getView()?.getCharacterId()!!) {
+            char = it
+            setCharacterData()
+        }
     }
 
     fun onFatherBtnClick() {
@@ -42,12 +33,15 @@ class CharacterPresenter(
     }
 
     private fun setCharacterData() {
-        getView()?.setColor(R.color.baratheon_primary, R.color.baratheon_accent)
+        val colors = AppConfig.getColorsByHome(char.house)
+        getView()?.setImage(AppConfig.getIconIdByHome(char.house, true))
+        getView()?.setColor(colors.second, colors.third)
 
         getView()?.setAliases(char.aliases.joinToString(separator = "\t"))
         getView()?.setTitles(char.titles.joinToString(separator = "\t"))
         getView()?.setBorn(char.born)
         getView()?.setWords(char.words)
+        getView()?.setName(char.name)
 
         if (char.father != null)
             getView()?.showFatherButton(char.father!!.name)
@@ -57,5 +51,7 @@ class CharacterPresenter(
 
         if (!char.died.isNullOrEmpty())
             getView()?.showDiedMessage(char.died)
+
+        getView()?.hideLoading()
     }
 }

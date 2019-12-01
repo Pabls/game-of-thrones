@@ -17,4 +17,18 @@ interface CharactersDao {
     """
     )
     suspend fun getCharacters(): List<CharacterDto>
+
+    @Query(
+        """
+        SELECT * FROM characters WHERE house=:house;
+    """
+    )
+    suspend fun getCharactersByHouseName(house: String): List<CharacterDto>
+
+    @Query(
+        """
+        SELECT * FROM characters WHERE url=:id;
+    """
+    )
+    suspend fun getCharactersById(id: String): CharacterDto
 }

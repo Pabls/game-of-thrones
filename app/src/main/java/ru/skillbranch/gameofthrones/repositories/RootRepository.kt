@@ -8,11 +8,13 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import ru.skillbranch.gameofthrones.AppConfig
 import ru.skillbranch.gameofthrones.data.database.AppDatabase
 import ru.skillbranch.gameofthrones.data.database.entities.CharacterDto
 import ru.skillbranch.gameofthrones.data.database.entities.HouseDto
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterFull
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterItem
+import ru.skillbranch.gameofthrones.data.local.entities.RelativeCharacter
 import ru.skillbranch.gameofthrones.data.network.Api
 import ru.skillbranch.gameofthrones.data.remote.res.CharacterRes
 import ru.skillbranch.gameofthrones.data.remote.res.HouseRes
@@ -79,6 +81,9 @@ object RootRepository : IRootRepository {
                         val ch = characterRes.filter { it ->
                             house.swornMembers.contains(it.url)
                         }
+                        val name = AppConfig.HOUSES_NAMES.find { house.name.contains(it) }
+                        house.shortName = name!!
+                        ch.forEach { it.house = name!! }
                         chars.addAll(ch)
                         pairs.add(house to ch)
                     }
@@ -147,6 +152,7 @@ object RootRepository : IRootRepository {
                         url = it.url,
                         titles = it.titles,
                         name = it.name,
+                        house = it.house,
                         mother = it.mother,
                         father = it.father,
                         aliases = it.aliases,
@@ -175,10 +181,10 @@ object RootRepository : IRootRepository {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     override fun dropDb(complete: () -> Unit) {
         val job = GlobalScope.launch(Dispatchers.Main) {
-            withContext(Dispatchers.IO) {
+            val res = withContext(Dispatchers.IO) {
                 database.getHouseDao().removeHouses()
-                complete.invoke()
             }
+            complete.invoke()
         }
     }
 
@@ -190,7 +196,21 @@ object RootRepository : IRootRepository {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     override fun findCharactersByHouseName(name: String, result: (Characters: List<CharacterItem>) -> Unit) {
-        //TODO implement me
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            val characters = withContext(Dispatchers.IO) {
+                database.getCharactersDao().getCharactersByHouseName(name)
+            }
+
+            result.invoke(characters.map {
+                CharacterItem(
+                    id = it.url,
+                    house = it.house,
+                    aliases = it.aliases,
+                    name = it.name,
+                    titles = it.titles
+                )
+            }.sortedBy { it.name })
+        }
     }
 
     /**
@@ -201,7 +221,26 @@ object RootRepository : IRootRepository {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     override fun findCharacterFullById(id: String, result: (Character: CharacterFull) -> Unit) {
-        //TODO implement me
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            val character = withContext(Dispatchers.IO) {
+                database.getCharactersDao().getCharactersById(id)
+            }
+
+            result.invoke(
+                CharacterFull(
+                    id = character.url,
+                    titles = character.titles,
+                    name = character.name,
+                    aliases = character.aliases,
+                    house = character.house,
+                    died = character.died,
+                    born = character.born,
+                    father = RelativeCharacter(id = "", house = "", name = character.father),
+                    mother = RelativeCharacter(id = "", house = "", name = character.mother),
+                    words = ""
+                )
+            )
+        }
     }
 
     /**
@@ -210,10 +249,10 @@ object RootRepository : IRootRepository {
      */
     override fun isNeedUpdate(result: (isNeed: Boolean) -> Unit) {
         val job = GlobalScope.launch(Dispatchers.Main) {
-            withContext(Dispatchers.IO) {
-                val house = database.getHouseDao().getFirstHouse()
-                result.invoke(house == null)
+            val house = withContext(Dispatchers.IO) {
+                database.getHouseDao().getFirstHouse()
             }
+            result.invoke(house == null)
         }
     }
 

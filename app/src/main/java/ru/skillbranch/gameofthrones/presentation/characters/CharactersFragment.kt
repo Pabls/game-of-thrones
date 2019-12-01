@@ -30,7 +30,7 @@ class CharactersFragment : BaseFragment(), ICharactersView {
             }
     }
 
-    var house: String? = null
+    internal var house: String? = null
     private var presenter: CharactersPresenter? = null
     private var rvCharacters: RecyclerView? = null
     private var adapter: CharactersAdapter? = null
@@ -81,6 +81,8 @@ class CharactersFragment : BaseFragment(), ICharactersView {
     override fun navigateToCharacterFragment(id: String) {
         getRouter()?.navigateToCharacterFragment(id)
     }
+
+    override fun getHouse(): String? = house
 
     fun setSearchQuery(query: String?) {
         val i = 0

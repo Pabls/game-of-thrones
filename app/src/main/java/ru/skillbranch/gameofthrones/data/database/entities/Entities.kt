@@ -14,6 +14,7 @@ data class CharacterDto(
     val culture: String,
     val born: String,
     val died: String,
+    val house: String,
     @TypeConverters(StringConverter::class)
     val titles: List<String> = listOf(),
     @TypeConverters(StringConverter::class)
