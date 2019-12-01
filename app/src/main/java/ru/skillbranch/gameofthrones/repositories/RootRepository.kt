@@ -3,10 +3,17 @@ package ru.skillbranch.gameofthrones.repositories
 import androidx.annotation.VisibleForTesting
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterFull
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterItem
+import ru.skillbranch.gameofthrones.data.network.Api
 import ru.skillbranch.gameofthrones.data.remote.res.CharacterRes
 import ru.skillbranch.gameofthrones.data.remote.res.HouseRes
 
 object RootRepository : IRootRepository {
+
+    private lateinit var api: Api
+
+    fun setApi(api: Api) {
+        this.api = api
+    }
 
     /**
      * Получение данных о всех домах
