@@ -6,8 +6,8 @@ import ru.skillbranch.gameofthrones.repositories.IResourcesRepository
 import ru.skillbranch.gameofthrones.repositories.IRootRepository
 
 class CharactersPresenter(
-    val rootRepository: IRootRepository,
-    val resourcesRepository: IResourcesRepository
+    private val rootRepository: IRootRepository,
+    private val resourcesRepository: IResourcesRepository
 ) : BasePresenter<ICharactersView>() {
 
     override fun attachView(view: ICharactersView?) {

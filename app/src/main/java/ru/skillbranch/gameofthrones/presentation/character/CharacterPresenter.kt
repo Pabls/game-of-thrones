@@ -8,10 +8,9 @@ import ru.skillbranch.gameofthrones.repositories.IResourcesRepository
 import ru.skillbranch.gameofthrones.repositories.IRootRepository
 
 class CharacterPresenter(
-    val rootRepository: IRootRepository,
-    val resourcesRepository: IResourcesRepository
-)
-    : BasePresenter<ICharacterView>() {
+    private val rootRepository: IRootRepository,
+    private val resourcesRepository: IResourcesRepository
+) : BasePresenter<ICharacterView>() {
 
     lateinit var char: CharacterFull
 

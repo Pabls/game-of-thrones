@@ -26,14 +26,6 @@ abstract class BaseActivity : AppCompatActivity(), IBaseView {
         getPresenter()?.detachView()
     }
 
-    override fun showLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun hideLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun showMessage(message: String, indefinite: Boolean) {
         createAndShowSnackbar(message = message, bgColor = ru.skillbranch.gameofthrones.R.color.color_primary_dark, indefinite = indefinite)
     }
