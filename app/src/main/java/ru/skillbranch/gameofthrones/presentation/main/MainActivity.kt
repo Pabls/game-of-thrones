@@ -11,6 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager.widget.ViewPager
+import ru.skillbranch.gameofthrones.AppConfig
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.presentation.character.CharacterFragment
 import ru.skillbranch.gameofthrones.presentation.characters.CharactersFragment
@@ -40,6 +41,23 @@ class MainActivity : AppCompatActivity(), IRouter {
         viewPager?.adapter = PagerAdapter(supportFragmentManager, this@MainActivity)
         tabLayout = findViewById<TabLayout>(R.id.sliding_tabs)
         tabLayout?.setupWithViewPager(viewPager)
+
+        viewPager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                changeCurrentColor(position)
+            }
+
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -73,8 +91,7 @@ class MainActivity : AppCompatActivity(), IRouter {
 
     private fun setSearchQuery(query: String?) {
         try {
-            val tab = tabLayout?.getTabAt(tabLayout!!.selectedTabPosition)
-            val house = tab?.text
+            val house = getHouseBySelectedTab()
             val fragment = supportFragmentManager.fragments.find {
                 it is CharactersFragment && it.house == house
             }
@@ -83,6 +100,23 @@ class MainActivity : AppCompatActivity(), IRouter {
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
+        }
+    }
+
+    private fun getHouseBySelectedTab(index: Int? = null): String? {
+        val tab =
+            if (index == null) tabLayout?.getTabAt(tabLayout!!.selectedTabPosition) else tabLayout?.getTabAt(
+                index
+            )
+        return tab?.text.toString()
+    }
+
+    fun changeCurrentColor(index: Int) {
+        val house = getHouseBySelectedTab(index)
+        if (house != null) {
+            val colors = AppConfig.getColorsByHome(house!!)
+            toolbar?.setBackgroundColor(getColor(colors.second))
+            tabLayout?.setBackgroundColor(getColor(colors.second))
         }
     }
 }
