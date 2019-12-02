@@ -27,7 +27,7 @@ interface CharactersDao {
 
     @Query(
         """
-        SELECT * FROM characters WHERE url=:id;
+        SELECT * FROM characters WHERE id=:id;
     """
     )
     suspend fun getCharactersById(id: String): CharacterDto

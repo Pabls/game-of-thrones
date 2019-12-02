@@ -7,10 +7,9 @@ import ru.skillbranch.gameofthrones.data.database.AppDatabase
 class DatabaseModule(private val context: Context) {
 
     init {
-        db = Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,  AppDatabase.DATABASE_NAME
-        ).build()
+        db = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     companion object {

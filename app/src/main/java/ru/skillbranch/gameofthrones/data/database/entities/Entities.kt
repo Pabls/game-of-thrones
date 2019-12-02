@@ -8,6 +8,7 @@ import ru.skillbranch.gameofthrones.data.database.converters.StringConverter
 @Entity(tableName = "characters")
 data class CharacterDto(
     @PrimaryKey
+    val id: String,
     val url: String,
     val name: String,
     val gender: String,
@@ -31,7 +32,8 @@ data class CharacterDto(
     @TypeConverters(StringConverter::class)
     val tvSeries: List<String> = listOf(),
     @TypeConverters(StringConverter::class)
-    val playedBy: List<String> = listOf()
+    val playedBy: List<String> = listOf(),
+    val words: String
 )
 
 @Entity(tableName = "houses")

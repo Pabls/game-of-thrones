@@ -17,5 +17,6 @@ data class CharacterRes(
     val povBooks: List<String> = listOf(),
     val tvSeries: List<String> = listOf(),
     val playedBy: List<String> = listOf(),
-    var house: String = ""
+    var houseId: String = "",
+    var words: String = ""
 )

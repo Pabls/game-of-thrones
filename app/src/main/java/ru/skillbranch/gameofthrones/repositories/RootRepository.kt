@@ -83,7 +83,10 @@ object RootRepository : IRootRepository {
                         }
                         val name = AppConfig.HOUSES_NAMES.find { house.name.contains(it) }
                         house.shortName = name!!
-                        ch.forEach { it.house = name!! }
+                        ch.forEach {
+                            it.houseId = name!!
+                            it.words = house.words
+                        }
                         chars.addAll(ch)
                         pairs.add(house to ch)
                     }
@@ -112,7 +115,7 @@ object RootRepository : IRootRepository {
             withContext(Dispatchers.IO) {
                 val dtos = houses.map { it ->
                     HouseDto(
-                        shortName = it.name.substringAfter(" ").substringBefore(" "),
+                        shortName = it.shortName,
                         name = it.name,
                         coatOfArms = it.coatOfArms,
                         currentLord = it.currentLord,
@@ -149,10 +152,11 @@ object RootRepository : IRootRepository {
             withContext(Dispatchers.IO) {
                 val dtos = Characters.map { it ->
                     CharacterDto(
+                        id = it.url.substringAfterLast("/"),
                         url = it.url,
                         titles = it.titles,
                         name = it.name,
-                        house = it.house,
+                        house = it.houseId,
                         mother = it.mother,
                         father = it.father,
                         aliases = it.aliases,
@@ -165,7 +169,8 @@ object RootRepository : IRootRepository {
                         playedBy = it.playedBy,
                         povBooks = it.povBooks,
                         spouse = it.spouse,
-                        tvSeries = it.tvSeries
+                        tvSeries = it.tvSeries,
+                        words = it.words
                     )
                 }
                 database.getCharactersDao().insertCharacters(dtos)
@@ -225,6 +230,19 @@ object RootRepository : IRootRepository {
             val character = withContext(Dispatchers.IO) {
                 database.getCharactersDao().getCharactersById(id)
             }
+            var father  : CharacterDto? = null
+            if(character.father != null && character.father.isNotEmpty()) {
+                 father = withContext(Dispatchers.IO) {
+                    database.getCharactersDao().getCharactersById(character.father.substringAfterLast("/"))
+                }
+            }
+
+            var mother  : CharacterDto? = null
+            if(character.mother != null && character.mother.isNotEmpty()) {
+                 mother = withContext(Dispatchers.IO) {
+                    database.getCharactersDao().getCharactersById(character.mother.substringAfterLast("/"))
+                }
+            }
 
             result.invoke(
                 CharacterFull(
@@ -235,9 +253,9 @@ object RootRepository : IRootRepository {
                     house = character.house,
                     died = character.died,
                     born = character.born,
-                    father = RelativeCharacter(id = "", house = "", name = character.father),
-                    mother = RelativeCharacter(id = "", house = "", name = character.mother),
-                    words = ""
+                    father = if(father == null) father else RelativeCharacter(id = father.url.substringAfterLast("/"), house = father.house, name = father.name),
+                    mother = if(mother == null) mother else RelativeCharacter(id = mother.url.substringAfterLast("/"), house = mother.house, name = mother.name),
+                    words = character.words
                 )
             )
         }
