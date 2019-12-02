@@ -5,9 +5,7 @@ open class BasePresenter<V : IBaseView>: IPresenter<V> {
 
     override fun attachView(view: V?) { this.view = view }
 
-    override fun detachView() {
-        view = null
-    }
+    override fun detachView() { view = null }
 
     override fun getView(): V? = view
 }

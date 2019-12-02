@@ -32,7 +32,7 @@ class CharactersPresenter(
         if (query.isNullOrEmpty()) {
             getView()?.setData(characters)
         } else {
-            getView()?.setData(characters.filter { it.name.contains(query, true) })
+            getView()?.setData(characters.filter { it.name.toLowerCase().contains(query, true) })
         }
     }
 }

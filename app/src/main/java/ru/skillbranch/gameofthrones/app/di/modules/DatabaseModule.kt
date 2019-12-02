@@ -16,5 +16,5 @@ class DatabaseModule(private val context: Context) {
         lateinit var db: AppDatabase
     }
 
-    fun getDataBase(): AppDatabase = db
+    fun provideDataBase(): AppDatabase = db
 }

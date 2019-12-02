@@ -1,27 +1,34 @@
 package ru.skillbranch.gameofthrones.app.di.modules
 
+import android.content.Context
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
 import ru.skillbranch.gameofthrones.presentation.base.IBaseView
 import ru.skillbranch.gameofthrones.presentation.character.CharacterPresenter
 import ru.skillbranch.gameofthrones.presentation.characters.CharactersPresenter
+import ru.skillbranch.gameofthrones.presentation.main.MainPresenter
 import ru.skillbranch.gameofthrones.presentation.splash.SplashPresenter
 
-class PresentersModule(private val repositoriesModule: RepositoriesModule) {
+class PresentersModule(private val context: Context) {
 
-    fun getSplashPresenter(): BasePresenter<IBaseView> =
+    val repositoriesModule = RepositoriesModule(context)
+
+    fun provideSplashPresenter(): BasePresenter<IBaseView> =
         SplashPresenter(
-            repositoriesModule.getRootRepository(),
-            repositoriesModule.getResourcesRepository()
+            repositoriesModule.provideRootRepository(),
+            repositoriesModule.provideResourcesRepository()
         ) as BasePresenter<IBaseView>
 
-    fun getCharacterPresenter(): BasePresenter<IBaseView> =
+    fun provideMainPresenter(): BasePresenter<IBaseView> =
+        MainPresenter() as BasePresenter<IBaseView>
+
+    fun provideCharacterPresenter(): BasePresenter<IBaseView> =
         CharacterPresenter(
-            repositoriesModule.getRootRepository(),
-            repositoriesModule.getResourcesRepository()
+            repositoriesModule.provideRootRepository(),
+            repositoriesModule.provideResourcesRepository()
         ) as BasePresenter<IBaseView>
 
-    fun getCharactersPresenter(): BasePresenter<IBaseView> = CharactersPresenter(
-        repositoriesModule.getRootRepository(),
-        repositoriesModule.getResourcesRepository()
+    fun provideCharactersPresenter(): BasePresenter<IBaseView> = CharactersPresenter(
+        repositoriesModule.provideRootRepository(),
+        repositoriesModule.provideResourcesRepository()
     ) as BasePresenter<IBaseView>
 }

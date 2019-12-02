@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import org.w3c.dom.Text
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.presentation.base.BaseFragment
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
@@ -41,7 +40,7 @@ class CharacterFragment : BaseFragment(), ICharacterView {
     private var tvMotherTitle: TextView? = null
     private var ivBack: ImageView? = null
     private var collapsingToolbar: CollapsingToolbarLayout? = null
-    private var ivLogo : ImageView? = null
+    private var ivLogo: ImageView? = null
 
     private var ivWordsDecor: ImageView? = null
     private var ivBornDecor: ImageView? = null
@@ -58,6 +57,16 @@ class CharacterFragment : BaseFragment(), ICharacterView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initView(view)
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter?.checkDiedDate()
+    }
+
+    override fun onDestroyView() {
+        hideMessage()
+        super.onDestroyView()
     }
 
     override fun inject() {

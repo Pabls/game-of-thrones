@@ -3,12 +3,13 @@ package ru.skillbranch.gameofthrones.repositories
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.skillbranch.gameofthrones.AppConfig
+import ru.skillbranch.gameofthrones.utils.AppConfig
 import ru.skillbranch.gameofthrones.data.database.AppDatabase
 import ru.skillbranch.gameofthrones.data.database.entities.CharacterDto
 import ru.skillbranch.gameofthrones.data.database.entities.HouseDto
@@ -18,6 +19,7 @@ import ru.skillbranch.gameofthrones.data.local.entities.RelativeCharacter
 import ru.skillbranch.gameofthrones.data.network.Api
 import ru.skillbranch.gameofthrones.data.remote.res.CharacterRes
 import ru.skillbranch.gameofthrones.data.remote.res.HouseRes
+import ru.skillbranch.gameofthrones.utils.getIdFromUrl
 
 object RootRepository : IRootRepository {
 
@@ -152,7 +154,7 @@ object RootRepository : IRootRepository {
             withContext(Dispatchers.IO) {
                 val dtos = Characters.map { it ->
                     CharacterDto(
-                        id = it.url.substringAfterLast("/"),
+                        id = it.url.getIdFromUrl(),
                         url = it.url,
                         titles = it.titles,
                         name = it.name,
@@ -208,7 +210,7 @@ object RootRepository : IRootRepository {
 
             result.invoke(characters.map {
                 CharacterItem(
-                    id = it.url,
+                    id = it.id,
                     house = it.house,
                     aliases = it.aliases,
                     name = it.name,
@@ -230,17 +232,17 @@ object RootRepository : IRootRepository {
             val character = withContext(Dispatchers.IO) {
                 database.getCharactersDao().getCharactersById(id)
             }
-            var father  : CharacterDto? = null
-            if(character.father != null && character.father.isNotEmpty()) {
-                 father = withContext(Dispatchers.IO) {
-                    database.getCharactersDao().getCharactersById(character.father.substringAfterLast("/"))
+            var father: CharacterDto? = null
+            if (character.father != null && character.father.isNotEmpty()) {
+                father = withContext(Dispatchers.IO) {
+                    database.getCharactersDao().getCharactersById(character.father.getIdFromUrl())
                 }
             }
 
-            var mother  : CharacterDto? = null
-            if(character.mother != null && character.mother.isNotEmpty()) {
-                 mother = withContext(Dispatchers.IO) {
-                    database.getCharactersDao().getCharactersById(character.mother.substringAfterLast("/"))
+            var mother: CharacterDto? = null
+            if (character.mother != null && character.mother.isNotEmpty()) {
+                mother = withContext(Dispatchers.IO) {
+                    database.getCharactersDao().getCharactersById(character.mother.getIdFromUrl())
                 }
             }
 
@@ -253,8 +255,16 @@ object RootRepository : IRootRepository {
                     house = character.house,
                     died = character.died,
                     born = character.born,
-                    father = if(father == null) father else RelativeCharacter(id = father.url.substringAfterLast("/"), house = father.house, name = father.name),
-                    mother = if(mother == null) mother else RelativeCharacter(id = mother.url.substringAfterLast("/"), house = mother.house, name = mother.name),
+                    father = if (father == null) father else RelativeCharacter(
+                        id = father.url.getIdFromUrl(),
+                        house = father.house,
+                        name = father.name
+                    ),
+                    mother = if (mother == null) mother else RelativeCharacter(
+                        id = mother.url.getIdFromUrl(),
+                        house = mother.house,
+                        name = mother.name
+                    ),
                     words = character.words
                 )
             )
@@ -295,6 +305,7 @@ object RootRepository : IRootRepository {
                     }
                 }
             }
+
         })
     }
 
@@ -319,6 +330,7 @@ object RootRepository : IRootRepository {
                     }
                 }
             }
+
         })
     }
 }

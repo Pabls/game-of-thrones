@@ -1,16 +1,17 @@
 package ru.skillbranch.gameofthrones.app.di.modules
 
 import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.google.gson.Gson
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.skillbranch.gameofthrones.AppConfig
+import ru.skillbranch.gameofthrones.utils.AppConfig
 import ru.skillbranch.gameofthrones.data.network.Api
 
-class NetworkModule(private val gson: Gson) {
+class NetworkModule() {
+
+    val helpersModule = MappersModule()
 
     init {
         client = OkHttpClient.Builder()
@@ -19,7 +20,7 @@ class NetworkModule(private val gson: Gson) {
             .build()
 
         retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(GsonConverterFactory.create(helpersModule.provideGson()))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .client(client)
             .baseUrl(AppConfig.BASE_URL)
@@ -35,5 +36,5 @@ class NetworkModule(private val gson: Gson) {
         lateinit var api: Api
     }
 
-    fun getApi(): Api = api
+    fun provideApi(): Api = api
 }

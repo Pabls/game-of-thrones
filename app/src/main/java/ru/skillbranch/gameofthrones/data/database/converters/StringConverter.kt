@@ -4,9 +4,11 @@ import androidx.room.TypeConverter
 
 class StringConverter {
 
-    @TypeConverter
-    fun fromString(value: String): List<String> = value.split(";")
+    private val DELIMITER = ";"
 
     @TypeConverter
-    fun fromArrayList(list: List<String>) = list.joinToString(";")
+    fun fromString(value: String): List<String> = value.split(DELIMITER)
+
+    @TypeConverter
+    fun fromArrayList(list: List<String>) = list.joinToString(DELIMITER)
 }

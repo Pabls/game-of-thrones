@@ -19,4 +19,6 @@
     <string name="character_fragment.text.father">Father:</string>
     <string name="character_fragment.text.mother">Mother:</string>
 
+    <string name="character_fragment.text.died">died in:</string>
+
 </resources>

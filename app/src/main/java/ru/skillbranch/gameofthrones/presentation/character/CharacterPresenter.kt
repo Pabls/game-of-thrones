@@ -1,12 +1,12 @@
 package ru.skillbranch.gameofthrones.presentation.character
 
-import ru.skillbranch.gameofthrones.AppConfig
 import ru.skillbranch.gameofthrones.R
+import ru.skillbranch.gameofthrones.utils.AppConfig
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterFull
-import ru.skillbranch.gameofthrones.data.local.entities.RelativeCharacter
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
 import ru.skillbranch.gameofthrones.repositories.IResourcesRepository
 import ru.skillbranch.gameofthrones.repositories.IRootRepository
+import ru.skillbranch.gameofthrones.utils.joinWithTabulation
 
 class CharacterPresenter(
     private val rootRepository: IRootRepository,
@@ -32,13 +32,18 @@ class CharacterPresenter(
         getView()?.showNextCharacterScreen(char.mother!!.id)
     }
 
+    fun checkDiedDate() {
+        if (::char.isInitialized && !char.died.isNullOrEmpty())
+            getView()?.showDiedMessage("${resourcesRepository.getStringById(R.string.character_fragment_text_died)} ${char.died}")
+    }
+
     private fun setCharacterData() {
         val colors = AppConfig.getColorsByHome(char.house)
         getView()?.setImage(AppConfig.getIconIdByHome(char.house, true))
         getView()?.setColor(colors.second, colors.third)
 
-        getView()?.setAliases(char.aliases.joinToString(separator = "\t"))
-        getView()?.setTitles(char.titles.joinToString(separator = "\t"))
+        getView()?.setAliases(char.aliases.joinWithTabulation())
+        getView()?.setTitles(char.titles.joinWithTabulation())
         getView()?.setBorn(char.born)
         getView()?.setWords(char.words)
         getView()?.setName(char.name)
@@ -49,8 +54,7 @@ class CharacterPresenter(
         if (char.mother != null)
             getView()?.showMotherButton(char.mother!!.name)
 
-        if (!char.died.isNullOrEmpty())
-            getView()?.showDiedMessage(char.died)
+        checkDiedDate()
 
         getView()?.hideLoading()
     }

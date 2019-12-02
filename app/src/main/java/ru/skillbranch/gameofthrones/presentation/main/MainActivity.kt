@@ -2,29 +2,32 @@ package ru.skillbranch.gameofthrones.presentation.main
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.view.Menu
-import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager.widget.ViewPager
-import ru.skillbranch.gameofthrones.AppConfig
+import ru.skillbranch.gameofthrones.utils.AppConfig
 import ru.skillbranch.gameofthrones.R
+import ru.skillbranch.gameofthrones.presentation.base.BaseActivity
+import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
+import ru.skillbranch.gameofthrones.presentation.base.IBaseView
+import ru.skillbranch.gameofthrones.presentation.base.IPresenter
 import ru.skillbranch.gameofthrones.presentation.character.CharacterFragment
 import ru.skillbranch.gameofthrones.presentation.characters.CharactersFragment
 import java.lang.Exception
 
 
-class MainActivity : AppCompatActivity(), IRouter {
+class MainActivity : BaseActivity(), IRouter, IMainView {
 
     companion object {
         @JvmStatic
         fun getStartIntent(context: Context): Intent = Intent(context, MainActivity::class.java)
     }
 
+    private var presenter: MainPresenter? = null
     private var toolbar: Toolbar? = null
     private var searchView: SearchView? = null
     private var viewPager: ViewPager? = null
@@ -32,32 +35,8 @@ class MainActivity : AppCompatActivity(), IRouter {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setTitle(getString(R.string.app_name))
-
-        viewPager = findViewById(R.id.viewpager)
-        viewPager?.adapter = PagerAdapter(supportFragmentManager, this@MainActivity)
-        tabLayout = findViewById<TabLayout>(R.id.sliding_tabs)
-        tabLayout?.setupWithViewPager(viewPager)
-
-        viewPager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
-            }
-
-            override fun onPageSelected(position: Int) {
-                changeCurrentColor(position)
-            }
-
-        })
+        initToolbar()
+        initViewPager()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -89,6 +68,71 @@ class MainActivity : AppCompatActivity(), IRouter {
             .commit()
     }
 
+    override fun inject() {
+        getComponent().inject(this)
+    }
+
+    override fun setPresenter(presenter: BasePresenter<IBaseView>) {
+        this.presenter = presenter as MainPresenter
+    }
+
+    override fun getLayoutId(): Int = R.layout.activity_main
+
+    override fun getPresenter(): IPresenter<IBaseView>? {
+        return try {
+            return if (presenter is BasePresenter<*>)
+                presenter as BasePresenter<IBaseView>
+            else null
+        } catch (ex: Exception) {
+            null
+        }
+    }
+
+    override fun showLoading() {
+    }
+
+    override fun hideLoading() {
+    }
+
+    fun changeCurrentColor(index: Int) {
+        val house = getHouseBySelectedTab(index)
+        if (house != null) {
+            val colors = AppConfig.getColorsByHome(house!!)
+            toolbar?.setBackgroundColor(getColor(colors.second))
+            tabLayout?.setBackgroundColor(getColor(colors.second))
+        }
+    }
+
+    private fun initToolbar() {
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setTitle(getString(R.string.app_name))
+    }
+
+    private fun initViewPager() {
+        viewPager = findViewById(R.id.viewpager)
+        viewPager?.adapter = PagerAdapter(supportFragmentManager, this@MainActivity)
+        tabLayout = findViewById<TabLayout>(R.id.sliding_tabs)
+        tabLayout?.setupWithViewPager(viewPager)
+
+        viewPager?.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                changeCurrentColor(position)
+            }
+
+        })
+    }
+
     private fun setSearchQuery(query: String?) {
         try {
             val house = getHouseBySelectedTab()
@@ -109,14 +153,5 @@ class MainActivity : AppCompatActivity(), IRouter {
                 index
             )
         return tab?.text.toString()
-    }
-
-    fun changeCurrentColor(index: Int) {
-        val house = getHouseBySelectedTab(index)
-        if (house != null) {
-            val colors = AppConfig.getColorsByHome(house!!)
-            toolbar?.setBackgroundColor(getColor(colors.second))
-            tabLayout?.setBackgroundColor(getColor(colors.second))
-        }
     }
 }

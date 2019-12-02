@@ -1,6 +1,6 @@
 package ru.skillbranch.gameofthrones.presentation.splash
 
-import ru.skillbranch.gameofthrones.AppConfig
+import ru.skillbranch.gameofthrones.utils.AppConfig
 import ru.skillbranch.gameofthrones.presentation.base.BasePresenter
 import ru.skillbranch.gameofthrones.repositories.IResourcesRepository
 import ru.skillbranch.gameofthrones.repositories.IRootRepository
@@ -26,12 +26,8 @@ class SplashPresenter(
     }
 
     private fun getDataFromApi() {
-        rootRepository.getNeedHouseWithCharacters(houseNames = *AppConfig.NEED_HOUSES) { houses ->
-            navigateToMainScreen()
-        }
+        rootRepository.getNeedHouseWithCharacters(houseNames = *AppConfig.NEED_HOUSES) { navigateToMainScreen() }
     }
 
-    private fun navigateToMainScreen() {
-        getView()?.navigateToMainScreen()
-    }
+    private fun navigateToMainScreen() { getView()?.navigateToMainScreen() }
 }
