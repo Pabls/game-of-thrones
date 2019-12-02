@@ -85,7 +85,7 @@ class CharactersFragment : BaseFragment(), ICharactersView {
     override fun getHouse(): String? = house
 
     fun setSearchQuery(query: String?) {
-        val i = 0
+        presenter?.searchCharacter(query)
     }
 
     private fun initView(view: View) {

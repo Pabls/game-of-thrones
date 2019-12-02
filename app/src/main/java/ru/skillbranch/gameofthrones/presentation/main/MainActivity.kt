@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.view.Menu
+import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.tabs.TabLayout
@@ -32,21 +33,20 @@ class MainActivity : AppCompatActivity(), IRouter {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         toolbar = findViewById(R.id.toolbar)
-        toolbar?.title = getString(ru.skillbranch.gameofthrones.R.string.app_name)
         setSupportActionBar(toolbar)
+        supportActionBar?.setTitle(getString(R.string.app_name))
 
-        viewPager = findViewById<ViewPager>(R.id.viewpager)
+        viewPager = findViewById(R.id.viewpager)
         viewPager?.adapter = PagerAdapter(supportFragmentManager, this@MainActivity)
         tabLayout = findViewById<TabLayout>(R.id.sliding_tabs)
         tabLayout?.setupWithViewPager(viewPager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.search_menu, menu)
+        menuInflater.inflate(R.menu.search_menu, menu)
         val actionSearch = menu.findItem(R.id.menu_search)
         searchView = actionSearch.actionView as SearchView
-        searchView?.inputType = InputType.TYPE_TEXT_VARIATION_URI
+        searchView?.inputType = InputType.TYPE_CLASS_TEXT
         searchView?.queryHint = getString(ru.skillbranch.gameofthrones.R.string.menu_search_hint)
 
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
