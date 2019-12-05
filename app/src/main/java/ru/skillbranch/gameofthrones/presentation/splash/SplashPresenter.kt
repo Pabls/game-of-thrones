@@ -12,6 +12,7 @@ class SplashPresenter(
 
     override fun attachView(view: ISplashView?) {
         super.attachView(view)
+        getView()?.showLoading()
         checkDatabase()
     }
 
@@ -29,5 +30,8 @@ class SplashPresenter(
         rootRepository.getNeedHouseWithCharacters(houseNames = *AppConfig.NEED_HOUSES) { navigateToMainScreen() }
     }
 
-    private fun navigateToMainScreen() { getView()?.navigateToMainScreen() }
+    private fun navigateToMainScreen() {
+        getView()?.hideLoading()
+        getView()?.navigateToMainScreen()
+    }
 }

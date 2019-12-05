@@ -1,6 +1,9 @@
 package ru.skillbranch.gameofthrones.presentation.splash
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import ru.skillbranch.gameofthrones.R
 import ru.skillbranch.gameofthrones.presentation.base.BaseActivity
@@ -15,7 +18,12 @@ import kotlin.concurrent.timerTask
 class SplashActivity : BaseActivity(), ISplashView {
 
     private var presenter: SplashPresenter? = null
-    //private var backgroundImage: Drawable? = null
+    private var backgroundImage: Drawable? = null
+    private val timer = Timer()
+
+    private var red = 255
+    private var green = 255
+    private var blue = 255
 
     override fun setPresenter(presenter: BasePresenter<IBaseView>) {
         this.presenter = presenter as SplashPresenter
@@ -40,37 +48,27 @@ class SplashActivity : BaseActivity(), ISplashView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        //backgroundImage = window?.decorView?.background
-        //backgroundImage?.setColorFilter(Color.rgb(140, 140 ,140), PorterDuff.Mode.MULTIPLY)
+        backgroundImage = window?.decorView?.background
     }
 
-//    override fun onStart() {
-//        super.onStart()
-////        var red = 140
-////        var green = 140
-////        var blue = 140
-////        Timer().schedule(timerTask {
-////            this@SplashActivity.runOnUiThread {
-////                backgroundImage?.setColorFilter(Color.rgb(red, green, blue), PorterDuff.Mode.MULTIPLY)
-////                red += 5
-////                green += 5
-////                blue -= 5
-////            }
-////        }, 0L, 200L)
-////        Thread(Runnable {
-////            Thread.sleep(5000)
-////            this.runOnUiThread {
-////                startMainActivity()
-////            }
-////        }).start()
-//    }
+    override fun onStart() {
+        super.onStart()
+        backgroundImage?.setColorFilter(Color.rgb(red, green ,blue), PorterDuff.Mode.MULTIPLY)
+    }
 
     override fun showLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        timer.schedule(timerTask {
+            this@SplashActivity.runOnUiThread {
+                backgroundImage?.setColorFilter(Color.rgb(red, green, blue), PorterDuff.Mode.MULTIPLY)
+                red -= 2
+                green -= 1
+                blue -= 4
+            }
+        }, 0L, 50L)
     }
 
     override fun hideLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        cancelTimer()
     }
 
     override fun navigateToMainScreen() {
@@ -78,8 +76,7 @@ class SplashActivity : BaseActivity(), ISplashView {
         startActivity(intent)
     }
 
-    private fun startMainActivity() {
-        val intent = Intent(MainActivity.getStartIntent(this))
-        startActivity(intent)
+    private fun cancelTimer() {
+        timer.cancel()
     }
 }
