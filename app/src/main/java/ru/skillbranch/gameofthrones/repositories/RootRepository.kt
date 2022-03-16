@@ -1,20 +1,49 @@
 package ru.skillbranch.gameofthrones.repositories
 
 import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.skillbranch.gameofthrones.utils.AppConfig
+import ru.skillbranch.gameofthrones.data.database.AppDatabase
+import ru.skillbranch.gameofthrones.data.database.entities.CharacterDto
+import ru.skillbranch.gameofthrones.data.database.entities.HouseDto
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterFull
 import ru.skillbranch.gameofthrones.data.local.entities.CharacterItem
+import ru.skillbranch.gameofthrones.data.local.entities.RelativeCharacter
+import ru.skillbranch.gameofthrones.data.network.Api
 import ru.skillbranch.gameofthrones.data.remote.res.CharacterRes
 import ru.skillbranch.gameofthrones.data.remote.res.HouseRes
+import ru.skillbranch.gameofthrones.utils.getIdFromUrl
 
-object RootRepository {
+object RootRepository : IRootRepository {
+
+    private val FIRST_PAGE = 1
+
+    private lateinit var api: Api
+    private lateinit var database: AppDatabase
+
+    fun setApi(api: Api) {
+        this.api = api
+    }
+
+    fun setDatabase(database: AppDatabase) {
+        this.database = database
+    }
 
     /**
      * Получение данных о всех домах
      * @param result - колбек содержащий в себе список данных о домах
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getAllHouses(result : (houses : List<HouseRes>) -> Unit) {
-        //TODO implement me
+    override fun getAllHouses(result: (houses: List<HouseRes>) -> Unit) {
+        var housesRes: MutableList<HouseRes> = ArrayList()
+        tryGetAllHouses(FIRST_PAGE, housesRes, result)
     }
 
     /**
@@ -23,8 +52,15 @@ object RootRepository {
      * @param result - колбек содержащий в себе список данных о домах
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getNeedHouses(vararg houseNames: String, result : (houses : List<HouseRes>) -> Unit) {
-        //TODO implement me
+    override fun getNeedHouses(vararg houseNames: String, result: (houses: List<HouseRes>) -> Unit) {
+        getAllHouses { houses ->
+            if (houses.isNotEmpty()) {
+                val needHouses = houses.filter { house -> houseNames.contains(house.name) }
+                result.invoke(needHouses)
+            } else {
+                result.invoke(houses)
+            }
+        }
     }
 
     /**
@@ -33,8 +69,40 @@ object RootRepository {
      * @param result - колбек содержащий в себе список данных о доме и персонажей в нем (Дом - Список Персонажей в нем)
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getNeedHouseWithCharacters(vararg houseNames: String, result : (houses : List<Pair<HouseRes, List<CharacterRes>>>) -> Unit) {
-        //TODO implement me
+    override fun getNeedHouseWithCharacters(
+        vararg houseNames: String,
+        result: (houses: List<Pair<HouseRes, List<CharacterRes>>>) -> Unit
+    ) {
+        getNeedHouses(houseNames = *houseNames) { houses ->
+            if (houses.isNotEmpty()) {
+                var characterRes: MutableList<CharacterRes> = ArrayList()
+                tryGetNeedCharacters(FIRST_PAGE, characterRes) { characters ->
+                    val pairs = mutableListOf<Pair<HouseRes, List<CharacterRes>>>()
+                    val chars = mutableListOf<CharacterRes>()
+                    houses.forEach { house ->
+                        val ch = characterRes.filter { it ->
+                            house.swornMembers.contains(it.url)
+                        }
+                        val name = AppConfig.HOUSES_NAMES.find { house.name.contains(it) }
+                        house.shortName = name!!
+                        ch.forEach {
+                            it.houseId = name!!
+                            it.words = house.words
+                        }
+                        chars.addAll(ch)
+                        pairs.add(house to ch)
+                    }
+
+                    insertHouses(houses) {
+                        insertCharacters(chars) {
+                            result.invoke(pairs)
+                        }
+                    }
+                }
+            } else {
+                result.invoke(listOf<Pair<HouseRes, List<CharacterRes>>>())
+            }
+        }
     }
 
     /**
@@ -44,8 +112,34 @@ object RootRepository {
      * @param complete - колбек о завершении вставки записей db
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun insertHouses(houses : List<HouseRes>, complete: () -> Unit) {
-        //TODO implement me
+    override fun insertHouses(houses: List<HouseRes>, complete: () -> Unit) {
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
+                val dtos = houses.map { it ->
+                    HouseDto(
+                        shortName = it.shortName,
+                        name = it.name,
+                        coatOfArms = it.coatOfArms,
+                        currentLord = it.currentLord,
+                        diedOut = it.diedOut,
+                        founded = it.founded,
+                        heir = it.heir,
+                        founder = it.founder,
+                        region = it.region,
+                        url = it.url,
+                        words = it.words,
+                        titles = it.titles,
+                        ancestralWeapons = it.ancestralWeapons,
+                        cadetBranches = it.cadetBranches,
+                        overlord = it.overlord,
+                        seats = it.seats,
+                        swornMembers = it.swornMembers
+                    )
+                }
+                database.getHouseDao().insertHouses(dtos)
+                complete.invoke()
+            }
+        }
     }
 
     /**
@@ -55,8 +149,36 @@ object RootRepository {
      * @param complete - колбек о завершении вставки записей db
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun insertCharacters(Characters : List<CharacterRes>, complete: () -> Unit) {
-        //TODO implement me
+    override fun insertCharacters(Characters: List<CharacterRes>, complete: () -> Unit) {
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.IO) {
+                val dtos = Characters.map { it ->
+                    CharacterDto(
+                        id = it.url.getIdFromUrl(),
+                        url = it.url,
+                        titles = it.titles,
+                        name = it.name,
+                        house = it.houseId,
+                        mother = it.mother,
+                        father = it.father,
+                        aliases = it.aliases,
+                        allegiances = it.allegiances,
+                        books = it.books,
+                        born = it.born,
+                        culture = it.culture,
+                        died = it.died,
+                        gender = it.gender,
+                        playedBy = it.playedBy,
+                        povBooks = it.povBooks,
+                        spouse = it.spouse,
+                        tvSeries = it.tvSeries,
+                        words = it.words
+                    )
+                }
+                database.getCharactersDao().insertCharacters(dtos)
+                complete.invoke()
+            }
+        }
     }
 
     /**
@@ -64,8 +186,13 @@ object RootRepository {
      * @param complete - колбек о завершении очистки db
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun dropDb(complete: () -> Unit) {
-        //TODO implement me
+    override fun dropDb(complete: () -> Unit) {
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            val res = withContext(Dispatchers.IO) {
+                database.getHouseDao().removeHouses()
+            }
+            complete.invoke()
+        }
     }
 
     /**
@@ -75,8 +202,22 @@ object RootRepository {
      * @param result - колбек содержащий в себе список краткой информации о персонажах дома
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun findCharactersByHouseName(name : String, result: (Characters : List<CharacterItem>) -> Unit) {
-        //TODO implement me
+    override fun findCharactersByHouseName(name: String, result: (Characters: List<CharacterItem>) -> Unit) {
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            val characters = withContext(Dispatchers.IO) {
+                database.getCharactersDao().getCharactersByHouseName(name)
+            }
+
+            result.invoke(characters.map {
+                CharacterItem(
+                    id = it.id,
+                    house = it.house,
+                    aliases = it.aliases,
+                    name = it.name,
+                    titles = it.titles
+                )
+            }.sortedBy { it.name })
+        }
     }
 
     /**
@@ -86,16 +227,110 @@ object RootRepository {
      * @param result - колбек содержащий в себе полную информацию о персонаже
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun findCharacterFullById(id : String, result: (Character : CharacterFull) -> Unit) {
-        //TODO implement me
+    override fun findCharacterFullById(id: String, result: (Character: CharacterFull) -> Unit) {
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            val character = withContext(Dispatchers.IO) {
+                database.getCharactersDao().getCharactersById(id)
+            }
+            var father: CharacterDto? = null
+            if (character.father != null && character.father.isNotEmpty()) {
+                father = withContext(Dispatchers.IO) {
+                    database.getCharactersDao().getCharactersById(character.father.getIdFromUrl())
+                }
+            }
+
+            var mother: CharacterDto? = null
+            if (character.mother != null && character.mother.isNotEmpty()) {
+                mother = withContext(Dispatchers.IO) {
+                    database.getCharactersDao().getCharactersById(character.mother.getIdFromUrl())
+                }
+            }
+
+            result.invoke(
+                CharacterFull(
+                    id = character.url,
+                    titles = character.titles,
+                    name = character.name,
+                    aliases = character.aliases,
+                    house = character.house,
+                    died = character.died,
+                    born = character.born,
+                    father = if (father == null) father else RelativeCharacter(
+                        id = father.url.getIdFromUrl(),
+                        house = father.house,
+                        name = father.name
+                    ),
+                    mother = if (mother == null) mother else RelativeCharacter(
+                        id = mother.url.getIdFromUrl(),
+                        house = mother.house,
+                        name = mother.name
+                    ),
+                    words = character.words
+                )
+            )
+        }
     }
 
     /**
      * Метод возвращет true если в базе нет ни одной записи, иначе false
      * @param result - колбек о завершении очистки db
      */
-    fun isNeedUpdate(result: (isNeed : Boolean) -> Unit){
-        //TODO implement me
+    override fun isNeedUpdate(result: (isNeed: Boolean) -> Unit) {
+        val job = GlobalScope.launch(Dispatchers.Main) {
+            val house = withContext(Dispatchers.IO) {
+                database.getHouseDao().getFirstHouse()
+            }
+            result.invoke(house == null)
+        }
     }
 
+    private fun tryGetAllHouses(
+        page: Int,
+        houses: MutableList<HouseRes>,
+        result: (houses: List<HouseRes>) -> Unit
+    ) {
+        api?.getHouses(page).enqueue(object : Callback<List<HouseRes>> {
+            override fun onFailure(call: Call<List<HouseRes>>, t: Throwable) {
+                result.invoke(listOf())
+            }
+
+            override fun onResponse(call: Call<List<HouseRes>>, response: Response<List<HouseRes>>) {
+                if (response.body() != null) {
+                    val housesRes = response.body()!!
+                    if (housesRes.isNotEmpty()) {
+                        houses.addAll(housesRes)
+                        tryGetAllHouses(page = page + 1, houses = houses, result = result)
+                    } else {
+                        result.invoke(houses)
+                    }
+                }
+            }
+
+        })
+    }
+
+    private fun tryGetNeedCharacters(
+        page: Int,
+        characters: MutableList<CharacterRes>,
+        result: (houses: List<CharacterRes>) -> Unit
+    ) {
+        api?.getCharacters(page).enqueue(object : Callback<List<CharacterRes>> {
+            override fun onFailure(call: Call<List<CharacterRes>>, t: Throwable) {
+                result.invoke(listOf())
+            }
+
+            override fun onResponse(call: Call<List<CharacterRes>>, response: Response<List<CharacterRes>>) {
+                if (response.body() != null) {
+                    val charactersRes = response.body()!!
+                    if (charactersRes.isNotEmpty()) {
+                        characters.addAll(charactersRes)
+                        tryGetNeedCharacters(page = page + 1, characters = characters, result = result)
+                    } else {
+                        result.invoke(characters)
+                    }
+                }
+            }
+
+        })
+    }
 }
